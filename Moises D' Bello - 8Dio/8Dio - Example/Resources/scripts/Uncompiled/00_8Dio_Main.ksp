@@ -1,0 +1,501 @@
+
+on init
+
+    {#pragma save_compiled_source ../8Dio.txt}
+    set_ui_height_px(550)
+    set_ui_width_px(645) 
+    make_perfview
+
+
+  {VARIABLES}
+    declare $count 
+    declare const $mouse_behaviour_A:= -700
+    declare const $mouse_behaviour_B:=  700
+    declare ui_panel $View_Gate
+    declare ui_panel $View_Filter
+    declare ui_panel $Main_Page
+    declare ui_panel $Effects_Page
+
+  {PAGE}
+    declare read ui_switch Instrument_Page[2]
+      Instrument_Page0 -> text     := "MAIN"
+      Instrument_Page1 -> text     := "EFFECTS"
+
+    macro Instrument_Page_Controls(#n#)
+      Instrument_Page#n# -> height   := 40
+      Instrument_Page#n# -> width    := 280
+      Instrument_Page#n# -> y        := 490
+      Instrument_Page#n# -> x        := 40 + #n# * 290
+    end macro
+    iterate_macro(Instrument_Page_Controls) := 0 to 1
+
+
+  {---------------------------MAIN PAGE-----------------------------}
+
+  {SETTINGS}
+    declare read ui_switch Settings[2]
+
+    macro Settings_Controls(#n#)
+      Settings#n# -> text     := ""
+      Settings#n# -> height   := 25
+      Settings#n# -> width    := 25
+      Settings#n# -> y        := 10
+      Settings#n# -> x        := 495 + #n# * 100
+      Settings#n# -> parent_panel := get_ui_id($Main_Page)
+    end macro
+    iterate_macro(Settings_Controls) := 0 to 1
+
+  {CONTROLS}
+    declare read ui_slider Art_Vol[6](0,1000000)
+    declare read ui_switch Art_On[6]
+    declare read ui_switch Art_Name[6]
+ 
+    declare !Articulation_Name[6]
+    !Articulation_Name[0] := "FLAT"
+    !Articulation_Name[1] := "LAZY FLAT"
+    !Articulation_Name[2] := "VIBRATO"
+    !Articulation_Name[3] := "EXTREME VIBRATO"
+    !Articulation_Name[4] := "MULTI-STACCATO"
+    !Articulation_Name[5] := "SHORT STACCATO"
+
+    macro Top_Controls(#n#)
+      Art_Vol#n# -> default := 500000
+      Art_Vol#n# -> y       := 150
+      Art_Vol#n# -> x       := 30 + #n# * 100
+      Art_Vol#n# -> parent_panel := get_ui_id($Main_Page)
+      
+      Art_On#n# -> text     := ""
+      Art_On#n# -> height   := 15
+      Art_On#n# -> width    := 15
+      Art_On#n# -> y        := 50
+      Art_On#n# -> x        := 100 + #n# * 100
+      Art_On#n# -> parent_panel := get_ui_id($Main_Page)
+            
+      Art_Name#n# -> text     := !Articulation_Name[#n#]
+      Art_Name#n# -> height   := 15
+      Art_Name#n# -> width    := 100
+      Art_Name#n# -> y        := 100
+      Art_Name#n# -> x        := 25 + #n# * 100
+      Art_Name#n# -> parent_panel := get_ui_id($Main_Page)
+    end macro
+    iterate_macro(Top_Controls) := 0 to 5
+
+  {------VIEW A-------}
+  
+    declare read ui_switch $Tabs_[2]
+  
+      macro Tab_Controls_A(#n#)
+        $Tabs_#n# -> height  := 15
+        $Tabs_#n# -> width   := 15
+        $Tabs_#n# -> y       := 340
+        $Tabs_#n# -> x       := 330 + (#n#) * 25
+        $Tabs_#n# -> parent_panel := get_ui_id($Main_Page)
+      end macro
+      iterate_macro(Tab_Controls_A) := 0 to 1
+
+  {GATE}
+
+    declare read ui_slider $Gate (0,1000000)
+    declare read ui_label  $Gate_lbl (1,1)
+    declare read ui_label  $Rate_lbl (1,1)
+  
+      $Gate -> default  := 0
+      $Gate -> y        := 230
+      $Gate -> x        := 190
+      $Gate -> parent_panel := get_ui_id($View_Gate)
+  
+      $Gate_lbl -> text := "GATE"
+      $Gate_lbl -> y    := 210
+      $Gate_lbl -> x    := 190
+      $Gate_lbl -> text_alignment    := 1
+      $Gate_lbl -> parent_panel := get_ui_id($View_Gate)
+  
+      $Rate_lbl -> text := "RATE 8th"
+      $Rate_lbl -> y    := 310
+      $Rate_lbl -> x    := 190
+      $Rate_lbl -> text_alignment    := 1
+      $Rate_lbl -> text_alignment    := 1
+      $Rate_lbl -> parent_panel := get_ui_id($View_Gate)
+
+    declare read ui_switch $Rates[8]
+  
+      macro Rate_Controls_A(#n#)
+        $Rates#n# -> height  := 15
+        $Rates#n# -> width   := 15
+        $Rates#n# -> y       := 260
+        $Rates#n# -> x       := 190 + (#n#) * 25}
+        $Rates#n# -> parent_panel := get_ui_id($View_Gate)
+      end macro
+      iterate_macro(Rate_Controls_A) := 0 to 3
+  
+      macro Rate_Controls_B(#n#)
+        $Rates#n# -> height  := 15
+        $Rates#n# -> width   := 15
+        $Rates#n# -> y       := 280
+        $Rates#n# -> x       := 190 + (#n#-4) * 25}
+        $Rates#n# -> parent_panel := get_ui_id($View_Gate)
+      end macro
+      iterate_macro(Rate_Controls_B) := 4 to 7
+
+  {TUNNING}
+    declare read ui_slider Tuning[2](0,1000000)
+    declare read ui_label  Tuning_lbl[2](1,1)
+       
+      Tuning_lbl0 -> text   := "TONAL"
+      Tuning_lbl1 -> text   := "FINE"
+
+    macro Tuning_Controls(#n#)
+      
+      Tuning#n# -> default         := 500000
+      Tuning#n# -> mouse_behaviour := $mouse_behaviour_A
+      Tuning#n# -> y               := 250
+      Tuning#n# -> x               := 390 + #n# * 100
+      Tuning#n# -> parent_panel := get_ui_id($View_Gate)
+
+      Tuning_lbl#n# -> text_alignment    := 1
+      Tuning_lbl#n# -> y                 := 220
+      Tuning_lbl#n# -> x                 := 390 + #n# * 100
+      Tuning_lbl#n# -> parent_panel := get_ui_id($View_Gate)
+
+    end macro
+    iterate_macro(Tuning_Controls) := 0 to 1
+
+  {------VIEW B-------}
+  
+    declare read ui_switch $Selection_arrow_[4]
+    declare read ui_menu   $Selection_X_[4]
+    declare read ui_menu   $Selection_Y_[4]
+    declare read ui_switch $Selection_Power_[4]
+    declare read ui_menu   $Selection_Effect_[4]
+    declare read ui_slider $Selection_Portion_[4](0,1000000)
+
+    declare ui_xy ?XY0[2]
+    declare ui_xy ?XY1[2]
+    declare ui_xy ?XY2[2]
+    declare ui_xy ?XY3[2]
+    declare $xyID_0
+    declare $xyID_1
+    declare $xyID_2
+    declare $xyID_3
+  
+    macro XY_Side_Controls_A(#n#)
+
+      $xyID_#n# := get_ui_id(?XY#n#)
+      $xyID_#n# -> height  := 70
+      $xyID_#n# -> width   := 70
+      $xyID_#n# -> y       := 200
+      $xyID_#n# -> x       := 80 + (#n#) * 150
+      $xyID_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      $Selection_arrow_#n# -> text    := "-"
+      $Selection_arrow_#n# -> height  := 20
+      $Selection_arrow_#n# -> width   := 20
+      $Selection_arrow_#n# -> y       := 200
+      $Selection_arrow_#n# -> x       := 50 + (#n#) * 150
+      $Selection_arrow_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      $Selection_X_#n# -> height   := 20
+      $Selection_X_#n# -> width    := 20
+      $Selection_X_#n# -> textpos_y:= 100
+      $Selection_X_#n# -> y        := 220
+      $Selection_X_#n# -> x        := 50 + (#n#) * 150
+      $Selection_X_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      $Selection_Y_#n# -> height   := 20
+      $Selection_Y_#n# -> width    := 20
+      $Selection_Y_#n# -> textpos_y:= 100
+      $Selection_Y_#n# -> y        := 240
+      $Selection_Y_#n# -> x        := 50 + (#n#) * 150
+      $Selection_Y_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      $Selection_Power_#n# -> height   := 20
+      $Selection_Power_#n# -> width    := 20
+      $Selection_Power_#n# -> textpos_y:= 100
+      $Selection_Power_#n# -> y        := 260
+      $Selection_Power_#n# -> x        := 50 + (#n#) * 150
+      $Selection_Power_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      $Selection_Effect_#n# -> height   := 18
+      $Selection_Effect_#n# -> width    := 100
+      $Selection_Effect_#n# -> y        := 310
+      $Selection_Effect_#n# -> x        := 50 + (#n#) * 150
+      $Selection_Effect_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      $Selection_Portion_#n# -> mouse_behaviour   := $mouse_behaviour_B
+      $Selection_Portion_#n# -> default           := 800000
+      $Selection_Portion_#n# -> y                 := 290
+      $Selection_Portion_#n# -> x                 := 50 + (#n#) * 150
+      $Selection_Portion_#n# -> parent_panel := get_ui_id($View_Filter)
+
+      add_menu_item($Selection_X_#n#,"DISABLE",0)
+      add_menu_item($Selection_X_#n#,"CUTOFF",1)
+      add_menu_item($Selection_X_#n#,"RESONANSE",2)
+
+      add_menu_item($Selection_Y_#n#,"DISABLE",0)
+      add_menu_item($Selection_Y_#n#,"CUTOFF",1)
+      add_menu_item($Selection_Y_#n#,"RESONANSE",2)
+
+      add_menu_item($Selection_Effect_#n#,"-- FILTERS --",0)
+      add_menu_item($Selection_Effect_#n#,"LOW PASS",1)
+      add_menu_item($Selection_Effect_#n#,"HIGH PASS",2)
+      add_menu_item($Selection_Effect_#n#,"BAND PASS",3)
+      add_menu_item($Selection_Effect_#n#,"-- EFFECTS -- ",4)
+      add_menu_item($Selection_Effect_#n#,"DISTORTION",5)
+      add_menu_item($Selection_Effect_#n#,"LO-FI",6)
+      add_menu_item($Selection_Effect_#n#,"ROTATOR",7)
+      add_menu_item($Selection_Effect_#n#,"DELAY",8)
+      add_menu_item($Selection_Effect_#n#,"CHORUS",9)
+      add_menu_item($Selection_Effect_#n#,"PHASER",10)
+      add_menu_item($Selection_Effect_#n#,"FLANGER",11)
+      add_menu_item($Selection_Effect_#n#,"REVERB",12)
+      add_menu_item($Selection_Effect_#n#,"TRANSFORM",13)
+    end macro
+    iterate_macro(XY_Side_Controls_A) := 0 to 3
+
+  {BOTTOM CONTROLS}
+
+    declare read ui_slider Env_ctrl[6](0,1000000)
+    declare read ui_label Env_Name[6](1,1)
+ 
+    declare !Envelope_Name[6]
+    !Envelope_Name[0] := "DYNAMIC"
+    !Envelope_Name[1] := "ATTACK"
+    !Envelope_Name[2] := "DECAY"
+    !Envelope_Name[3] := "RELEASE"
+    !Envelope_Name[4] := "SPEED"
+    !Envelope_Name[5] := "OFFSET"
+
+    macro Bottom_Controls(#n#)
+      Env_ctrl#n# -> default := 500000
+      Env_ctrl#n# -> y       := 400
+      Env_ctrl#n# -> x       := 30 + #n# * 100
+      Env_ctrl#n# -> parent_panel := get_ui_id($Main_Page)
+      
+      Env_Name#n# -> text     := !Envelope_Name[#n#]
+      Env_Name#n# -> height   := 15
+      Env_Name#n# -> width    := 100
+      Env_Name#n# -> text_alignment    := 1
+      Env_Name#n# -> y        := 450
+      Env_Name#n# -> x        := 25 + #n# * 100
+      Env_Name#n# -> parent_panel := get_ui_id($Main_Page)
+    end macro
+    iterate_macro(Bottom_Controls) := 0 to 5
+
+  {---------------------------EFFECT PAGE-----------------------------}
+
+  {BYPASS CONTROLS}
+
+    declare read ui_switch Bypass[5]
+
+    macro Bypass_Controls(#n#)
+      Bypass#n# -> text     := ""
+      Bypass#n# -> height   := 25
+      Bypass#n# -> width    := 25
+      Bypass#n# -> y        := 50 + #n# * 80
+      Bypass#n# -> x        := 50
+      Bypass#n# -> parent_panel := get_ui_id($Effects_Page)
+    end macro
+    iterate_macro(Bypass_Controls) := 0 to 4
+
+  {FILTER CONTROLS}
+    declare read ui_slider Filter_Vol[3](0,1000000)
+    declare read ui_switch SEQ_On
+    declare read ui_label Filter_lbl[3] (1,1)
+ 
+    declare !Filter_Name[3]
+    !Filter_Name[0] := "LOW-PASS"
+    !Filter_Name[1] := "HIGH-PASS"
+    !Filter_Name[2] := "GAIN"
+      
+      SEQ_On -> text     := ""
+      SEQ_On -> height   := 30
+      SEQ_On -> width    := 30
+      SEQ_On -> y        := 50
+      SEQ_On -> x        := 570
+      SEQ_On -> parent_panel := get_ui_id($Effects_Page)
+            
+    macro Filter_Controls(#n#)
+      Filter_Vol#n# -> default := 500000
+      Filter_Vol#n# -> y       := 55
+      Filter_Vol#n# -> x       := 200 + #n# * 100
+      Filter_Vol#n# -> parent_panel := get_ui_id($Effects_Page)
+
+      Filter_lbl#n# -> text     := !Filter_Name[#n#]
+      Filter_lbl#n# -> height   := 15
+      Filter_lbl#n# -> width    := 100
+      Filter_lbl#n# -> text_alignment        := 1
+      Filter_lbl#n# -> y        := 75
+      Filter_lbl#n# -> x        := 200 + #n# * 100
+      Filter_lbl#n# -> parent_panel := get_ui_id($Effects_Page)
+    end macro
+    iterate_macro(Filter_Controls) := 0 to 2
+
+  {EQ CONTROLS}
+    declare read ui_slider EQ_Vol[3](0,1000000)
+    declare read ui_label EQ_lbl[3] (1,1)
+ 
+    declare !EQ_Name[3]
+    !EQ_Name[0] := "LOW"
+    !EQ_Name[1] := "MID"
+    !EQ_Name[2] := "HIGH"
+
+    macro EQ_Controls(#n#)
+      EQ_Vol#n# -> default := 500000
+      EQ_Vol#n# -> y       := 155-20
+      EQ_Vol#n# -> x       := 200 + #n# * 100
+      EQ_Vol#n# -> parent_panel := get_ui_id($Effects_Page)
+
+      EQ_lbl#n# -> text     := !EQ_Name[#n#]
+      EQ_lbl#n# -> height   := 15
+      EQ_lbl#n# -> width    := 100
+      EQ_lbl#n# -> text_alignment        := 1
+      EQ_lbl#n# -> y        := 175-20
+      EQ_lbl#n# -> x        := 200 + #n# * 100
+      EQ_lbl#n# -> parent_panel := get_ui_id($Effects_Page)
+    end macro
+    iterate_macro(EQ_Controls) := 0 to 2
+
+  {DEGRADER CONTROLS}
+
+    declare read ui_slider Degrader_Vol[4](0,1000000)
+    declare read ui_switch Degrader_On
+    declare read ui_label Degrader_lbl[4] (1,1)
+ 
+    declare !Degrader_Name[4]
+    !Degrader_Name[0] := "RATE"
+    !Degrader_Name[1] := "RESOLUTION"
+    !Degrader_Name[2] := "TONE"
+    !Degrader_Name[3] := "DRIVE"
+      
+      Degrader_On -> text     := ""
+      Degrader_On -> height   := 30
+      Degrader_On -> width    := 30
+      Degrader_On -> y        := 250-40
+      Degrader_On -> x        := 570
+      Degrader_On -> parent_panel := get_ui_id($Effects_Page)
+            
+    macro Degrader_Controls(#n#)
+      Degrader_Vol#n# -> default := 500000
+      Degrader_Vol#n# -> y       := 255-40
+      Degrader_Vol#n# -> x       := 150 + #n# * 100
+      Degrader_Vol#n# -> parent_panel := get_ui_id($Effects_Page)
+
+      Degrader_lbl#n# -> text     := !Degrader_Name[#n#]
+      Degrader_lbl#n# -> height   := 15
+      Degrader_lbl#n# -> width    := 100
+      Degrader_lbl#n# -> text_alignment        := 1
+      Degrader_lbl#n# -> y        := 275-40
+      Degrader_lbl#n# -> x        := 150 + #n# * 100
+      Degrader_lbl#n# -> parent_panel := get_ui_id($Effects_Page)
+    end macro
+    iterate_macro(Degrader_Controls) := 0 to 3
+
+  {DELAY CONTROLS}
+
+    declare read ui_slider Delay_Vol[4](0,1000000)
+    declare read ui_label Delay_lbl[4] (1,1)
+ 
+    declare !Delay_Name[4]
+    !Delay_Name[0] := "MIX"
+    !Delay_Name[1] := "TIME"
+    !Delay_Name[2] := "FEED"
+    !Delay_Name[3] := "PAN"
+
+    macro Delay_Controls(#n#)
+      Delay_Vol#n# -> default := 500000
+      Delay_Vol#n# -> y       := 355-70
+      Delay_Vol#n# -> x       := 150 + #n# * 100
+      Delay_Vol#n# -> parent_panel := get_ui_id($Effects_Page)
+
+      Delay_lbl#n# -> text     := !Delay_Name[#n#]
+      Delay_lbl#n# -> height   := 15
+      Delay_lbl#n# -> width    := 100
+      Delay_lbl#n# -> text_alignment        := 1
+      Delay_lbl#n# -> y        := 375-70
+      Delay_lbl#n# -> x        := 150 + #n# * 100
+      Delay_lbl#n# -> parent_panel := get_ui_id($Effects_Page)
+    end macro
+    iterate_macro(Delay_Controls) := 0 to 3
+
+  {TRANSFORM CONTROLS}
+
+    declare read ui_slider Transfor_Vol[4](0,1000000)
+    declare read ui_label  Transfor_lbl[4] (1,1)
+    declare read ui_menu   $Transfor_Sel
+
+    declare !Transfor_Name[4]
+    !Transfor_Name[0] := "MIX"
+    !Transfor_Name[1] := "SIZE"
+    !Transfor_Name[2] := "PRE-DELAY"
+    !Transfor_Name[3] := "FILTERS"
+
+    macro Transfor_Controls(#n#)
+      Transfor_Vol#n# -> default := 500000
+      Transfor_Vol#n# -> y       := 455-70
+      Transfor_Vol#n# -> x       := 150 + #n# * 100
+      Transfor_Vol#n# -> parent_panel := get_ui_id($Effects_Page)
+
+      Transfor_lbl#n# -> text     := !Transfor_Name[#n#]
+      Transfor_lbl#n# -> height   := 15
+      Transfor_lbl#n# -> width    := 100
+      Transfor_lbl#n# -> text_alignment        := 1
+      Transfor_lbl#n# -> y        := 475-70
+      Transfor_lbl#n# -> x        := 150 + #n# * 100
+      Transfor_lbl#n# -> parent_panel := get_ui_id($Effects_Page)
+    end macro
+    iterate_macro(Transfor_Controls) := 0 to 3
+
+      $Transfor_Sel -> height   := 20
+      $Transfor_Sel -> width    := 100
+      $Transfor_Sel -> y        := 430
+      $Transfor_Sel -> x        := 50
+      $Transfor_Sel -> parent_panel := get_ui_id($Effects_Page)
+
+      add_menu_item($Transfor_Sel,"MANY PRESETS",0)
+
+end on 
+
+function view_panel_gate 
+  $View_Gate   -> hide   := HIDE_WHOLE_CONTROL
+  $View_Filter -> hide   := HIDE_WHOLE_CONTROL
+  $Main_Page   -> hide   := HIDE_WHOLE_CONTROL
+  $Effects_Page-> hide   := HIDE_WHOLE_CONTROL
+
+  if($Tabs_0=1 and Instrument_Page0=1)
+    $View_Gate -> hide   := HIDE_PART_NOTHING
+  end if
+  if($Tabs_1=1 and Instrument_Page0=1)
+    $View_Filter -> hide   := HIDE_PART_NOTHING
+  end if
+
+  if(Instrument_Page0=1)
+    $Main_Page -> hide   := HIDE_PART_NOTHING
+  end if
+
+  if(Instrument_Page1=1)
+    $Effects_Page -> hide   := HIDE_PART_NOTHING
+  end if
+end function
+
+macro Panel_Action(#n#)
+  
+  on ui_control($Tabs_#n#)
+    $Tabs_0:= 0
+    $Tabs_1:= 0
+    $Tabs_#n#:=1
+    call view_panel_gate
+  end on
+  
+  on ui_control($Instrument_Page#n#)
+    $Instrument_Page0:= 0
+    $Instrument_Page1:= 0
+    $Instrument_Page#n#:=1
+    call view_panel_gate
+  end on
+end macro
+iterate_macro(Panel_Action) := 0 to 1
+
+
+on persistence_changed 
+  call view_panel_gate
+end on
